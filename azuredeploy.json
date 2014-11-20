@@ -129,7 +129,7 @@
                "properties": {
                   "appSettings": [
                      {
-                        "name": "API_KEY",
+                        "name": "ApiKey",
                         "value": "[parameters('apiKey')]"
                      }
                   ],
