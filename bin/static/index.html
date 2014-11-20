@@ -1,0 +1,82 @@
+<html>
+    <head>
+        #output {
+            font-weight: bold;
+        }        
+    </head>
+    <body>        
+        <label for="apikey">Api Key</label><input type="text" id="apikey" name="apikey" value="testkey"/><br/>
+        <label for="transaction">Is Transaction</label><input type="checkbox" id="transaction" name="transaction"><br/>
+        <label for="action">Action</label>
+        <select id="action" name="action">
+            <option value="query">Query</option>
+            <option value="query-sp">Query (StoredProcedure)</option>
+            <option value="execute">Execute</option>
+            <option value="execute-sp">Execute (StoredProcedure)</option>
+        </select><br/>
+        <label for="sql1">Sql Statement 1</label><textarea id="sql1"></textarea><br/>
+        <label for="sql2">Sql Statement 2 (optional)</label><textarea id="sql2"></textarea><br />
+        <label for="sql3">Sql Statement 3 (optional)</label><textarea id="sql3"></textarea><br />
+        <button id="run">Run</button>        
+        <pre id="output"></pre>
+    </body>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script>
+
+        $('#run').on('click', function() {
+            sendRequest();
+        });
+
+        function sendRequest() {
+            $('#output').text('');
+            var transaction = $('#transaction').prop('checked');
+            var apikey = $('#apikey').val();
+            var action = $("#action").val();
+            var sql1 = $("#sql1").val();
+            var sql2 = $("#sql2").val();
+            var sql3 = $("#sql2").val();
+
+            var reqData = {
+                transaction: transaction,
+                action: action,
+                sql: []
+            };
+
+            if (sql1) {
+                reqData.sql.push(sql1);
+            }
+
+            if (sql2) {
+                reqData.sql.push(sql2);
+            }
+
+            if (sql3) {
+                reqData.sql.push(sql3);
+            }
+
+
+            console.log("apikey is " + apikey);
+            console.log(reqData);
+
+            $.ajax({
+                url: '/sql',
+                data: JSON.stringify(reqData),
+                cache: false,
+                headers: {
+                    "X-Api-Key": apikey
+                },
+                processData: false,
+                contentType: "application/json",		
+                type: 'POST',
+                success:function(data, status, req) {
+                    console.log(data, status, req);
+                    $('#output').text(JSON.stringify(data, null, 2));
+                },
+                error: function (req, status, errorThrown) {
+                    $('#output').text('statuscode: ' + req.status + " response: " + req.responseText);
+                    console.log(req, status, errorThrown);
+                }
+            });
+        }    
+    </script>
+</html>
